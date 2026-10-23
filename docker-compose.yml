@@ -1,0 +1,24 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      - CHROMA_DIR=/app/chroma_db
+    volumes:
+      - ./chroma_db:/app/chroma_db
+      - hf_cache:/root/.cache/huggingface
+
+  ui:
+    build: .
+    command: ["streamlit", "run", "app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://api:8000
+    depends_on:
+      - api
+
+volumes:
+  hf_cache:

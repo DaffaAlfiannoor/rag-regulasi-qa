@@ -1,0 +1,4 @@
+question,gold_pasal,answerable
+"TODO: pertanyaan yang jawabannya ada di dokumen (tulis sendiri)","TODO: nomor pasal, pisahkan dengan ;",yes
+"TODO: pertanyaan lain yang jawabannya ada di dokumen","TODO: mis. 5;6",yes
+"TODO: pertanyaan yang SENGAJA tidak dibahas dokumen (untuk tes anti-halusinasi)",,no
