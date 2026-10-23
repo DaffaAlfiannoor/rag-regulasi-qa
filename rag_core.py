@@ -10,11 +10,13 @@ from dotenv import load_dotenv
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pypdf import PdfReader
 
-load_dotenv()
+load_dotenv(override=True)
 
 EMBED_MODEL = os.getenv("EMBED_MODEL", "intfloat/multilingual-e5-small")
 CHROMA_DIR = os.getenv("CHROMA_DIR", "chroma_db")
-LLM_MODEL = os.getenv("LLM_MODEL", "claude-haiku-5-5")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://kenari.id/v1")
+LLM_MODEL = os.getenv("LLM_MODEL", "gpt-oss-120b")
 DEFAULT_COLLECTION = os.getenv("COLLECTION", "regulasi")
 
 NOT_FOUND = "Informasi tidak ditemukan dalam dokumen."
@@ -166,24 +168,24 @@ def _format_context(hits):
 
 def answer(question, collection=DEFAULT_COLLECTION, k=4):
     hits = retrieve(question, collection, k)
-    if not os.getenv("ANTHROPIC_API_KEY"):
+    if not OPENAI_API_KEY:
         # Mode tanpa LLM: tampilkan potongan teratas apa adanya (berguna untuk tes retrieval).
         top = hits[0]["text"] if hits else NOT_FOUND
         return {"answer": f"[mode tanpa LLM] {top}", "sources": hits, "mode": "extractive"}
 
-    import anthropic
+    from openai import OpenAI
 
-    client = anthropic.Anthropic()
-    msg = client.messages.create(
+    client = OpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_BASE_URL)
+    response = client.chat.completions.create(
         model=LLM_MODEL,
         max_tokens=700,
-        system=SYSTEM_PROMPT,
         messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
             {
                 "role": "user",
                 "content": f"Konteks:\n{_format_context(hits)}\n\nPertanyaan: {question}",
             }
         ],
     )
-    text = "".join(b.text for b in msg.content if b.type == "text").strip()
+    text = (response.choices[0].message.content or "").strip()
     return {"answer": text, "sources": hits, "mode": "llm"}

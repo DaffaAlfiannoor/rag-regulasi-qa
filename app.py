@@ -34,7 +34,7 @@ if st.button("Tanya") and question.strip():
     st.subheader("Jawaban")
     st.write(out["answer"])
     if out.get("mode") == "extractive":
-        st.info("ANTHROPIC_API_KEY belum diisi, jadi yang tampil hanya potongan teks teratas.")
+        st.info("OPENAI_API_KEY belum diisi, jadi yang tampil hanya potongan teks teratas.")
 
     st.subheader("Sumber")
     for h in out["sources"]:

@@ -17,7 +17,7 @@ Informasi tidak ditemukan dalam dokumen.
 - Pemotongan lanjutan untuk pasal yang terlalu panjang menggunakan LangChain text splitter.
 - Embedding multilingual menggunakan `intfloat/multilingual-e5-small`.
 - Penyimpanan dan pencarian vector menggunakan ChromaDB dengan cosine distance.
-- Jawaban berbasis konteks menggunakan Anthropic Claude.
+- Jawaban berbasis konteks menggunakan API OpenAI-compatible Kenari.
 - Mode tanpa LLM untuk menguji retrieval tanpa API key.
 - Interface terminal melalui `ask.py`.
 - REST API menggunakan FastAPI.
@@ -43,7 +43,7 @@ PDF regulasi ──► ekstraksi teks ──► split per Pasal ──► chunki
 Pertanyaan ──► embedding query ──► pencarian chunk relevan ──► konteks
                                                                │
                                                                ▼
-                                                     Anthropic Claude
+                                                   Kenari OpenAI-compatible
                                                                │
                                                                ▼
                                                jawaban + sumber Pasal
@@ -72,7 +72,7 @@ Pertanyaan ──► embedding query ──► pencarian chunk relevan ──►
 - Git, opsional.
 - Docker Desktop, opsional.
 - Koneksi internet saat pertama kali mengunduh model embedding.
-- API key Anthropic jika ingin menggunakan jawaban generatif dari Claude.
+- API key Kenari jika ingin menggunakan jawaban generatif dari model LLM.
 
 ## Instalasi
 
@@ -115,14 +115,15 @@ Buat file `.env` di root proyek. Repository ini mengabaikan `.env` melalui `.git
 Contoh isi `.env`:
 
 ```env
-ANTHROPIC_API_KEY=sk-ant-api-key-anda
-LLM_MODEL=claude-haiku-5-5
+OPENAI_API_KEY=api-key-kenari-anda
+OPENAI_BASE_URL=https://kenari.id/v1
+LLM_MODEL=nama-model-kenari
 EMBED_MODEL=intfloat/multilingual-e5-small
 CHROMA_DIR=chroma_db
 COLLECTION=regulasi
 ```
 
-`ANTHROPIC_API_KEY` harus berupa API key Anthropic yang valid. Jika tidak diisi, pipeline tetap dapat menjalankan retrieval dalam mode tanpa LLM.
+`OPENAI_API_KEY` harus berupa API key Kenari yang valid. `OPENAI_BASE_URL` diarahkan ke endpoint OpenAI-compatible Kenari. Jika API key tidak diisi, pipeline tetap dapat menjalankan retrieval dalam mode tanpa LLM.
 
 Jangan membagikan atau meng-commit file `.env`.
 
@@ -372,16 +373,16 @@ Judul pasal tidak cocok dengan pola yang digunakan sistem. Pastikan judul sepert
 
 Jalankan `ingest.py` terlebih dahulu, dan pastikan nama collection sama dengan nilai `COLLECTION` di `.env`.
 
-### `anthropic.AuthenticationError: Invalid bearer token`
+### Error autentikasi atau `Invalid bearer token`
 
-`ANTHROPIC_API_KEY` terbaca tetapi tidak valid. Periksa bahwa `.env` berisi API key Anthropic yang aktif, bukan placeholder atau token dari layanan lain. Setelah mengubah `.env`, jalankan ulang proses API atau perintah terminal.
+`OPENAI_API_KEY` terbaca tetapi tidak valid. Periksa bahwa `.env` berisi API key Kenari yang aktif, bukan placeholder atau token dari layanan lain. Pastikan `OPENAI_BASE_URL` bernilai `https://kenari.id/v1`. Setelah mengubah `.env`, jalankan ulang proses API atau perintah terminal.
 
 ### Jawaban selalu menggunakan mode tanpa LLM
 
-`ANTHROPIC_API_KEY` belum terbaca. Pastikan file bernama `.env`, berada di root proyek, lalu cek tanpa menampilkan key:
+`OPENAI_API_KEY` belum terbaca. Pastikan file bernama `.env`, berada di root proyek, lalu cek tanpa menampilkan key:
 
 ```powershell
-python -c "import os; print(bool(os.getenv('ANTHROPIC_API_KEY')))"
+python -c "import os; print(bool(os.getenv('OPENAI_API_KEY')))"
 ```
 
 ### Model Hugging Face lambat di awal
