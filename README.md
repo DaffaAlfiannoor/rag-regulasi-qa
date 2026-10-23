@@ -1,5 +1,13 @@
 # Regulasi Q&A Assistant (RAG)
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://rag-regulasi-app.streamlit.app/)
+
+## Demo
+
+Coba aplikasi secara langsung di Streamlit:
+
+👉 [Buka Regulasi Q&A Assistant](https://rag-regulasi-app.streamlit.app/)
+
 Asisten tanya-jawab dokumen regulasi berbahasa Indonesia berbasis **Retrieval-Augmented Generation (RAG)**. Sistem ini membaca dokumen PDF, memecahnya berdasarkan struktur `Pasal`, menyimpan embedding-nya di ChromaDB, lalu mengambil potongan dokumen yang paling relevan untuk menjawab pertanyaan pengguna.
 
 Jawaban dari LLM dibatasi oleh konteks dokumen yang ditemukan dan diarahkan untuk menyertakan sitasi pasal. Jika konteks tidak memuat jawaban, sistem diarahkan untuk mengembalikan:
